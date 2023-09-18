@@ -1,0 +1,22 @@
+{
+  "template": "git@github.com:bl-sdk/common_dotfiles.git",
+  "commit": "c6cad57d450e0b696fb8586daaf29814427ef7c1",
+  "checkout": null,
+  "context": {
+    "cookiecutter": {
+      "_jinja2_env_vars": {
+        "lstrip_blocks": true,
+        "trim_blocks": true
+      },
+      "_extensions": [
+        "cookiecutter.extensions.SlugifyExtension"
+      ],
+      "project_name": "pluginloader",
+      "__project_slug": "pluginloader",
+      "include_cpp": true,
+      "include_py": false,
+      "_template": "git@github.com:bl-sdk/common_dotfiles.git"
+    }
+  },
+  "directory": null
+}
