@@ -1,18 +1,8 @@
 #include "pch.h"
 
-namespace {
-
-/**
- * @brief Main startup thread.
- * @note Instance of `LPTHREAD_START_ROUTINE`.
- *
- * @return unused.
- */
-DWORD WINAPI startup_thread(LPVOID /*unused*/) {
-    return 1;
-}
-
-}  // namespace
+#include "console.h"
+#include "loader.h"
+#include "proxy/proxy.h"
 
 /**
  * @brief Main entry point.
@@ -26,11 +16,17 @@ BOOL APIENTRY DllMain(HMODULE h_module, DWORD ul_reason_for_call, LPVOID /*unuse
     switch (ul_reason_for_call) {
         case DLL_PROCESS_ATTACH:
             DisableThreadLibraryCalls(h_module);
-            CreateThread(nullptr, 0, &startup_thread, nullptr, 0, nullptr);
+
+            pluginloader::console::create_if_needed();
+            pluginloader::proxy::init(h_module);
+            pluginloader::loader::load();
+
+            break;
+        case DLL_PROCESS_DETACH:
+            pluginloader::loader::free();
             break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:
-        case DLL_PROCESS_DETACH:
             break;
     }
     return TRUE;
