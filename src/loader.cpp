@@ -21,8 +21,7 @@ void load(void) {
     plugins_cookie = AddDllDirectory(plugins_dir.wstring().c_str());
     if (plugins_cookie == nullptr) {
         std::cerr << "Failed to add plugins folder as dll directory: "
-                  << util::format_last_win_error() << '\n'
-                  << std::flush;
+                  << util::format_last_win_error() << std::flush;
 
         // Continue to try load plugins anyway
     }
@@ -36,7 +35,6 @@ void load(void) {
         auto handle = LoadLibraryW(path.wstring().c_str());
         if (handle == nullptr) {
             std::cerr << "Failed to load plugin '" << path << "': " << util::format_last_win_error()
-                      << '\n'
                       << std::flush;
         } else {
             loaded_modules.emplace_back(handle);
