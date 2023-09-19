@@ -5,8 +5,10 @@ namespace pluginloader::loader {
 
 /**
  * @brief Loads all plugins.
+
+ * @param this_dll Handle to this dll's module.
  */
-void load(void);
+void load(HMODULE this_dll);
 
 /**
  * @brief Frees all plugins.

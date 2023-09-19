@@ -7,23 +7,17 @@ namespace pluginloader::loader {
 const constexpr auto PLUGINS_DIR_NAME = "Plugins";
 
 std::vector<HMODULE> loaded_modules{};
-DLL_DIRECTORY_COOKIE plugins_cookie = nullptr;
 
-void load(void) {
-    auto plugins_dir = std::filesystem::current_path() / PLUGINS_DIR_NAME;
+void load(HMODULE this_dll) {
+    wchar_t buf[MAX_PATH];
+    if (GetModuleFileNameW(this_dll, &buf[0], ARRAYSIZE(buf)) == 0) {
+        buf[0] = '\0';
+    }
+
+    auto plugins_dir = std::filesystem::path{buf}.parent_path() / PLUGINS_DIR_NAME;
     if (!std::filesystem::exists(plugins_dir)) {
         std::filesystem::create_directories(plugins_dir);
         return;
-    }
-
-    // While path does have a `.c_str()`, it's type isn't necessarily stable.
-    // Use the explicit wstring version to be safe
-    plugins_cookie = AddDllDirectory(plugins_dir.wstring().c_str());
-    if (plugins_cookie == nullptr) {
-        std::cerr << "Failed to add plugins folder as dll directory: "
-                  << util::format_last_win_error() << std::flush;
-
-        // Continue to try load plugins anyway
     }
 
     for (const auto& entry : std::filesystem::directory_iterator{plugins_dir}) {
@@ -32,9 +26,14 @@ void load(void) {
             continue;
         }
 
-        auto handle = LoadLibraryW(path.wstring().c_str());
+        // While path does have a `.c_str()`, it's type isn't necessarily stable.
+        // Use the explicit wstring version to be safe
+        // Include the DLL dir in the search path, so `Plugins/a.dll` can depend on `Plugins/b.dll`
+        auto handle =
+            LoadLibraryExW(path.wstring().c_str(), nullptr,
+                           LOAD_LIBRARY_SEARCH_DEFAULT_DIRS | LOAD_LIBRARY_SEARCH_DLL_LOAD_DIR);
         if (handle == nullptr) {
-            std::cerr << "Failed to load plugin '" << path << "': " << util::format_last_win_error()
+            std::cerr << "Failed to load plugin " << path << ": " << util::format_last_win_error()
                       << std::flush;
         } else {
             loaded_modules.emplace_back(handle);
@@ -43,11 +42,6 @@ void load(void) {
 }
 
 void free(void) {
-    if (plugins_cookie != nullptr) {
-        RemoveDllDirectory(plugins_cookie);
-        plugins_cookie = nullptr;
-    }
-
     for (const auto& module : loaded_modules) {
         FreeLibrary(module);
     }

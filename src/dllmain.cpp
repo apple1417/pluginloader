@@ -19,7 +19,7 @@ BOOL APIENTRY DllMain(HMODULE h_module, DWORD ul_reason_for_call, LPVOID /*unuse
 
             pluginloader::console::create_if_needed();
             pluginloader::proxy::init(h_module);
-            pluginloader::loader::load();
+            pluginloader::loader::load(h_module);
 
             break;
         case DLL_PROCESS_DETACH:
