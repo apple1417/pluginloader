@@ -24,6 +24,7 @@ BOOL APIENTRY DllMain(HMODULE h_module, DWORD ul_reason_for_call, LPVOID /*unuse
             break;
         case DLL_PROCESS_DETACH:
             pluginloader::loader::free();
+            pluginloader::proxy::free();
             break;
         case DLL_THREAD_ATTACH:
         case DLL_THREAD_DETACH:

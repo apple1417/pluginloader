@@ -39,13 +39,21 @@ target_sources(_pluginloader_base PUBLIC
 target_include_directories(_pluginloader_base INTERFACE "src" ${CONFIGURE_FILES_DIR})
 target_precompile_headers(_pluginloader_base INTERFACE "src/pch.h")
 
+function(pluginloader_add_impl name)
+    add_library(pluginloader_${name} SHARED ${ARGN})
+    set_target_properties(pluginloader_${name} PROPERTIES OUTPUT_NAME ${name})
+    target_link_libraries(pluginloader_${name} PUBLIC _pluginloader_base)
+endfunction()
+
+
 # ==================================================================================================
 
-add_library(pluginloader_no_proxy SHARED "src/proxy/none.cpp")
-target_link_libraries(pluginloader_no_proxy PUBLIC _pluginloader_base)
+pluginloader_add_impl(no_proxy "src/proxy/none.cpp")
+pluginloader_add_impl(d3d11 "src/proxy/d3d11.cpp")
 
 install(
     TARGETS
         pluginloader_no_proxy
+        pluginloader_d3d11
     RUNTIME DESTINATION .
 )

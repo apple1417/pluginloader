@@ -12,6 +12,11 @@ namespace pluginloader::proxy {
  */
 void init(HMODULE this_dll);
 
+/**
+ * @brief Frees the dll hijack proxy.
+ */
+void free(void);
+
 }  // namespace pluginloader::proxy
 
 #endif /* PROXY_PROXY_H */

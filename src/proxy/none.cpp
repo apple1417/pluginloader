@@ -5,5 +5,6 @@
 namespace pluginloader::proxy {
 
 void init(HMODULE /*this_dll*/) {}
+void free(void) {}
 
 }  // namespace pluginloader::proxy
