@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "version.inl"
+
 namespace pluginloader::console {
 
 void create_if_needed(void) {
@@ -42,6 +44,10 @@ void create_if_needed(void) {
     std::cerr.clear();
     std::wcin.clear();
     std::cin.clear();
+
+    std::cout << "Pluginloader v" << PROJECT_VERSION_MAJOR << '.' << PROJECT_VERSION_MINOR << '.'
+              << PROJECT_VERSION_PATCH << '\n'
+              << std::flush;
 }
 
 }  // namespace pluginloader::console
