@@ -1,6 +1,8 @@
 #ifndef UTIL_H
 #define UTIL_H
 
+#include "pch.h"
+
 namespace pluginloader::util {
 
 /**

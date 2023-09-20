@@ -5,7 +5,7 @@
 namespace pluginloader::console {
 
 void create_if_needed(void) {
-    std::string args{GetCommandLineA()};
+    const std::string args{GetCommandLineA()};
     if (args.find("--debug") == std::string::npos) {
         return;
     }

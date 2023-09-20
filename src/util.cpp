@@ -5,7 +5,7 @@ namespace pluginloader::util {
 
 std::string format_win_error(DWORD err) {
     LPSTR buf = nullptr;
-    size_t size = FormatMessageA(
+    const size_t size = FormatMessageA(
         FORMAT_MESSAGE_ALLOCATE_BUFFER | FORMAT_MESSAGE_FROM_SYSTEM | FORMAT_MESSAGE_IGNORE_INSERTS,
         nullptr, err, MAKELANGID(LANG_NEUTRAL, SUBLANG_DEFAULT), reinterpret_cast<LPSTR>(&buf), 0,
         nullptr);

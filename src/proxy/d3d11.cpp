@@ -62,7 +62,7 @@ DLL_EXPORT HRESULT D3D11CreateDeviceAndSwapChain(void* adapt,
 
 void init(HMODULE /*this_dll*/) {
     // Suspend all other threads to prevent a giant race condition
-    util::ThreadSuspender suspender{};
+    const util::ThreadSuspender suspender{};
 
     wchar_t buf[MAX_PATH];
     if (GetSystemDirectoryW(&buf[0], ARRAYSIZE(buf)) == 0) {
@@ -70,7 +70,7 @@ void init(HMODULE /*this_dll*/) {
         return;
     }
 
-    auto system_dx11 = std::filesystem::path{buf} / "d3d11.dll";
+    auto system_dx11 = std::filesystem::path{static_cast<wchar_t*>(buf)} / "d3d11.dll";
     dx11_dll_handle = LoadLibraryA(system_dx11.generic_string().c_str());
 
     d3d11_core_create_device_ptr = GetProcAddress(dx11_dll_handle, "D3D11CoreCreateDevice");
