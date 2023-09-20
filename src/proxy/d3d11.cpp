@@ -1,6 +1,4 @@
 #include "pch.h"
-#include <libloaderapi.h>
-#include <winnt.h>
 
 #include "util.h"
 
