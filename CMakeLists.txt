@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.24)
 
-project(pluginloader VERSION 1.0.0)
+project(pluginloader VERSION 1.0.1)
 
 add_library(_pluginloader_base INTERFACE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
@@ -9,7 +9,6 @@ target_compile_features(_pluginloader_base INTERFACE cxx_std_20)
 set_target_properties(_pluginloader_base PROPERTIES
     COMPILE_WARNING_AS_ERROR True
     INTERPROCEDURAL_OPTIMIZATION True
-    PREFIX ""
 )
 if(MSVC)
     target_compile_options(_pluginloader_base INTERFACE /W4)
@@ -41,7 +40,11 @@ target_precompile_headers(_pluginloader_base INTERFACE "src/pch.h")
 
 function(pluginloader_add_impl name)
     add_library(pluginloader_${name} SHARED ${ARGN})
-    set_target_properties(pluginloader_${name} PROPERTIES OUTPUT_NAME ${name})
+    set_target_properties(pluginloader_${name} PROPERTIES
+        PREFIX ""
+        OUTPUT_NAME ${name}
+        SUFFIX ".dll"
+    )
     target_link_libraries(pluginloader_${name} PUBLIC _pluginloader_base)
 endfunction()
 
@@ -50,10 +53,12 @@ endfunction()
 
 pluginloader_add_impl(no_proxy "src/proxy/none.cpp")
 pluginloader_add_impl(d3d11 "src/proxy/d3d11.cpp")
+pluginloader_add_impl(xinput1_3 "src/proxy/xinput1_3.cpp" "src/proxy/xinput1_3.def")
 
 install(
     TARGETS
         pluginloader_no_proxy
         pluginloader_d3d11
+        pluginloader_xinput1_3
     RUNTIME DESTINATION .
 )
