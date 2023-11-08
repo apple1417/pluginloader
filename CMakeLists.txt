@@ -50,10 +50,12 @@ endfunction()
 
 pluginloader_add_impl(no_proxy "src/proxy/none.cpp")
 pluginloader_add_impl(d3d11 "src/proxy/d3d11.cpp")
+pluginloader_add_impl(xinput1_3 "src/proxy/xinput1_3.cpp" "src/proxy/xinput1_3.def")
 
 install(
     TARGETS
         pluginloader_no_proxy
         pluginloader_d3d11
+        pluginloader_xinput1_3
     RUNTIME DESTINATION .
 )
