@@ -66,7 +66,7 @@ void init(HMODULE /*this_dll*/) {
 
     wchar_t buf[MAX_PATH];
     if (GetSystemDirectoryW(&buf[0], ARRAYSIZE(buf)) == 0) {
-        std::cerr << "[dhf] Unable to find system dll directory! We're probably about to crash.\n";
+        std::cerr << "Unable to find system dll directory! We're probably about to crash.\n";
         return;
     }
 
