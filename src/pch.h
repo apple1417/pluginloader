@@ -26,12 +26,12 @@ using std::uint8_t;
 
 #endif
 
-#if defined(_MSC_VER)
-#define DLL_EXPORT extern "C" __declspec(dllexport)
-#elif defined(__clang__)
+#if defined(__clang__) || defined(__MINGW32__)
 #define DLL_EXPORT extern "C" [[gnu::dllexport]]
+#elif defined(_MSC_VER)
+#define DLL_EXPORT extern "C" __declspec(dllexport)
 #else
-#error Unknown DLL export attribute
+#error Unknown dllexport attribute
 #endif
 
 #endif /* PCH_H */

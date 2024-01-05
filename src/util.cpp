@@ -51,9 +51,6 @@ void adjust_running_status(bool resume) {
         HANDLE thread = OpenThread(THREAD_GET_CONTEXT | THREAD_SET_CONTEXT | THREAD_SUSPEND_RESUME,
                                    0, te32.th32ThreadID);
         if (thread != nullptr) {
-            CONTEXT context;
-            context.ContextFlags = CONTEXT_DEBUG_REGISTERS;
-
             if (resume) {
                 ResumeThread(thread);
             } else {

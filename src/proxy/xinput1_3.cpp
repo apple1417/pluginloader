@@ -20,7 +20,14 @@ FARPROC xinput_set_state_ptr = nullptr;
 const constexpr auto XINPUT_GET_STATE_EX_ORDINAL = 100;
 FARPROC xinput_get_state_ex_ptr = nullptr;
 
-// NOLINTBEGIN(readability-identifier-naming, readability-identifier-length)
+}  // namespace
+
+// NOLINTBEGIN(readability-identifier-naming)
+
+#if defined(__MINGW32__)
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wcast-function-type"
+#endif
 
 DLL_EXPORT void XInputEnable(BOOL enable) {
     return reinterpret_cast<decltype(&XInputEnable)>(xinput_enable_ptr)(enable);
@@ -65,9 +72,11 @@ DLL_EXPORT DWORD XInputGetStateEx(DWORD dwUserIndex, void* pState) {
                                                                                   pState);
 }
 
-// NOLINTEND(readability-identifier-naming, readability-identifier-length)
+#if defined(__MINGW32__)
+#pragma GCC diagnostic pop
+#endif
 
-}  // namespace
+// NOLINTEND(readability-identifier-naming)
 
 void init(HMODULE /*this_dll*/) {
     // Suspend all other threads to prevent a giant race condition
