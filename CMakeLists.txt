@@ -1,6 +1,6 @@
 ﻿cmake_minimum_required(VERSION 3.24)
 
-project(pluginloader VERSION 1.0.1)
+project(pluginloader VERSION 1.0.2)
 
 add_library(_pluginloader_base INTERFACE)
 set(CMAKE_EXPORT_COMPILE_COMMANDS True)
@@ -10,10 +10,15 @@ set_target_properties(_pluginloader_base PROPERTIES
     COMPILE_WARNING_AS_ERROR True
     INTERPROCEDURAL_OPTIMIZATION True
 )
+
 if(MSVC)
     target_compile_options(_pluginloader_base INTERFACE /W4)
 else()
     target_compile_options(_pluginloader_base INTERFACE -Wall -Wextra -Wpedantic)
+endif()
+# CMake doesn't understand warnings as errors for MinGW yet
+if(MINGW)
+    target_compile_options(_pluginloader_base INTERFACE -Werror)
 endif()
 
 set(CONFIGURE_FILES_DIR "${CMAKE_CURRENT_BINARY_DIR}/configure")
