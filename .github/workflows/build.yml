@@ -1,10 +1,15 @@
 name: CI
 
-on: [
-  push,
-  pull_request,
-  workflow_dispatch
-]
+on:
+  push: {}
+  pull_request: {}
+  workflow_dispatch:
+    inputs:
+      new-release-tag:
+        description: >
+          New Release Tag. If given, creates a (draft) full release using the given tag.
+        type: string
+        required: false
 
 env:
   # Important to pin the clang version, cause we also use it for linting
@@ -23,7 +28,7 @@ jobs:
 
     steps:
     - name: Cache Clang
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: cache-clang
       with:
         path: C:\Program Files\LLVM
@@ -55,7 +60,7 @@ jobs:
     steps:
     - name: Restore Clang Cache
       if: startswith(matrix.preset, 'clang')
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       with:
         path: C:\Program Files\LLVM
         key: ${{ runner.os }}-clang-${{ env.CLANG_VERSION }}
@@ -63,7 +68,7 @@ jobs:
 
     - name: Add MSVC to PATH
       if: startswith(matrix.preset, 'msvc')
-      uses: TheMrMilchmann/setup-msvc-dev@v2
+      uses: TheMrMilchmann/setup-msvc-dev@v3
       with:
         arch: ${{ fromJSON('["x86", "x64"]')[contains(matrix.preset, 'x64')] }}
 
@@ -71,7 +76,7 @@ jobs:
       uses: lukka/get-cmake@latest
 
     - name: Checkout repository and submodules
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -84,7 +89,7 @@ jobs:
       run: cmake --build out/build/${{ matrix.preset }} --target install
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.preset }}
         path: out/install/${{ matrix.preset }}/
@@ -150,7 +155,7 @@ jobs:
     # xwin does take long enough that caching's worth it
     - name: Restore xwin cache
       if: contains(matrix.preset, 'cross')
-      uses: actions/cache@v3
+      uses: actions/cache@v4
       id: cache-xwin
       with:
         path: ~/xwin
@@ -169,7 +174,7 @@ jobs:
           --output ~/xwin
 
     - name: Checkout repository and submodules
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -187,7 +192,7 @@ jobs:
       run: cmake --build out/build/${{ matrix.preset }} --target install
 
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: ${{ matrix.preset }}
         path: out/install/${{ matrix.preset }}/
@@ -208,7 +213,7 @@ jobs:
 
     steps:
     - name: Restore Clang Cache
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       with:
         path: C:\Program Files\LLVM
         key: ${{ runner.os }}-clang-${{ env.CLANG_VERSION }}
@@ -222,7 +227,7 @@ jobs:
       run: pip install pyyaml
 
     - name: Checkout repository and submodules
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
       with:
         submodules: recursive
 
@@ -257,14 +262,14 @@ jobs:
 
     steps:
     - name: Restore Clang Cache
-      uses: actions/cache/restore@v3
+      uses: actions/cache/restore@v4
       with:
         path: C:\Program Files\LLVM
         key: ${{ runner.os }}-clang-${{ env.CLANG_VERSION }}
         fail-on-cache-miss: true
 
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Run clang-format
       run: |
@@ -282,7 +287,59 @@ jobs:
 
     steps:
     - name: Checkout repository
-      uses: actions/checkout@v3
+      uses: actions/checkout@v4
 
     - name: Check spelling
       uses: crate-ci/typos@master
+
+# ==============================================================================
+
+  release-draft-full:
+    runs-on: ubuntu-latest
+    if: >
+      github.ref == 'refs/heads/master'
+      && github.repository == 'bl-sdk/pluginloader'
+      && inputs.new-release-tag != ''
+
+    needs:
+      - build-ubuntu
+      - build-windows
+      - clang-tidy
+      - clang-format
+      - spelling
+
+    permissions:
+      contents: write
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+
+    - name: Download artifacts
+      uses: actions/download-artifact@v4
+      with:
+        path: ~/releases
+
+    - name: Zip artifacts
+      shell: bash
+      run: |
+        cd ~/releases
+        for folder in */ ; do
+          cd "$folder"
+          zip -r "${folder%/}.zip" .
+          cd ..
+        done
+
+    - name: Create new release tag
+      uses: rickstaa/action-create-tag@v1
+      with:
+        tag: ${{ inputs.new-release-tag }}
+
+    - name: Upload releases
+      uses: softprops/action-gh-release@v1
+      with:
+        tag_name: ${{ inputs.new-release-tag }}
+        files: "/home/runner/releases/*/*.zip"
+        fail_on_unmatched_files: true
+        draft: true
+        generate_release_notes: true
