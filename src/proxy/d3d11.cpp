@@ -98,6 +98,10 @@ void init(HMODULE /*this_dll*/) {
 
     auto system_dx11 = std::filesystem::path{static_cast<wchar_t*>(buf)} / "d3d11.dll";
     dx11_dll_handle = LoadLibraryA(system_dx11.generic_string().c_str());
+    if (dx11_dll_handle == nullptr) {
+        std::cerr << "Unable to find system d3d11.dll! We're probably about to crash.\n";
+        return;
+    }
 
     d3d11_core_create_device_ptr = GetProcAddress(dx11_dll_handle, "D3D11CoreCreateDevice");
     d3d11_create_device_ptr = GetProcAddress(dx11_dll_handle, "D3D11CreateDevice");

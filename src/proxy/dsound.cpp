@@ -119,6 +119,10 @@ void init(HMODULE /*this_dll*/) {
 
     auto system_dsound = std::filesystem::path{static_cast<wchar_t*>(buf)} / "dsound.dll";
     dsound_dll_handle = LoadLibraryA(system_dsound.generic_string().c_str());
+    if (dsound_dll_handle == nullptr) {
+        std::cerr << "Unable to find system dsound.dll! We're probably about to crash.\n";
+        return;
+    }
 
     direct_sound_create_ptr = GetProcAddress(dsound_dll_handle, "DirectSoundCreate");
     direct_sound_enumerate_a_ptr = GetProcAddress(dsound_dll_handle, "DirectSoundEnumerateA");

@@ -111,6 +111,10 @@ void init(HMODULE /*this_dll*/) {
 
     auto system_xinput = std::filesystem::path{static_cast<wchar_t*>(buf)} / "xinput1_3.dll";
     xinput_dll_handle = LoadLibraryA(system_xinput.generic_string().c_str());
+    if (xinput_dll_handle == nullptr) {
+        std::cerr << "Unable to find system xinput1_3.dll! We're probably about to crash.\n";
+        return;
+    }
 
     xinput_enable_ptr = GetProcAddress(xinput_dll_handle, "XInputEnable");
     xinput_get_battery_information_ptr =
