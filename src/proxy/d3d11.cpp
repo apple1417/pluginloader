@@ -13,6 +13,7 @@ HMODULE dx11_dll_handle = nullptr;
 FARPROC d3d11_core_create_device_ptr = nullptr;
 FARPROC d3d11_create_device_ptr = nullptr;
 FARPROC d3d11_create_device_and_swap_chain_ptr = nullptr;
+FARPROC d3d11_on_12_create_device_ptr = nullptr;
 
 }  // namespace
 
@@ -25,21 +26,21 @@ FARPROC d3d11_create_device_and_swap_chain_ptr = nullptr;
 
 DLL_EXPORT HRESULT D3D11CoreCreateDevice(void* fact,
                                          void* adapt,
-                                         unsigned int flag,
+                                         UINT flag,
                                          void* fl,
-                                         unsigned int featureLevels,
+                                         UINT featureLevels,
                                          void** ppDev) {
     return reinterpret_cast<decltype(&D3D11CoreCreateDevice)>(d3d11_core_create_device_ptr)(
         fact, adapt, flag, fl, featureLevels, ppDev);
 }
 
 DLL_EXPORT HRESULT D3D11CreateDevice(void* adapt,
-                                     unsigned int dt,
+                                     UINT dt,
                                      void* soft,
-                                     unsigned int flags,
+                                     UINT flags,
                                      int* ft,
-                                     unsigned int fl,
-                                     unsigned int ver,
+                                     UINT fl,
+                                     UINT ver,
                                      void** ppDevice,
                                      void* featureLevel,
                                      void** context) {
@@ -48,12 +49,12 @@ DLL_EXPORT HRESULT D3D11CreateDevice(void* adapt,
 }
 
 DLL_EXPORT HRESULT D3D11CreateDeviceAndSwapChain(void* adapt,
-                                                 unsigned int dt,
+                                                 UINT dt,
                                                  void* soft,
-                                                 unsigned int flags,
+                                                 UINT flags,
                                                  int* ft,
-                                                 unsigned int fl,
-                                                 unsigned int ver,
+                                                 UINT fl,
+                                                 UINT ver,
                                                  void* swapChainDesc,
                                                  void** swapChain,
                                                  void** ppDevice,
@@ -62,6 +63,21 @@ DLL_EXPORT HRESULT D3D11CreateDeviceAndSwapChain(void* adapt,
     return reinterpret_cast<decltype(&D3D11CreateDeviceAndSwapChain)>(
         d3d11_create_device_and_swap_chain_ptr)(adapt, dt, soft, flags, ft, fl, ver, swapChainDesc,
                                                 swapChain, ppDevice, featureLevel, context);
+}
+
+DLL_EXPORT HRESULT D3D11On12CreateDevice(void* pDevice,
+                                         UINT Flags,
+                                         void* pFeatureLevels,
+                                         UINT FeatureLevels,
+                                         void** ppCommandQueues,
+                                         UINT NumQueues,
+                                         UINT NodeMask,
+                                         void** ppDevice,
+                                         void** ppImmediateContext,
+                                         void* pChosenFeatureLevel) {
+    return reinterpret_cast<decltype(&D3D11On12CreateDevice)>(d3d11_on_12_create_device_ptr)(
+        pDevice, Flags, pFeatureLevels, FeatureLevels, ppCommandQueues, NumQueues, NodeMask,
+        ppDevice, ppImmediateContext, pChosenFeatureLevel);
 }
 
 #if defined(__MINGW32__)
@@ -87,6 +103,7 @@ void init(HMODULE /*this_dll*/) {
     d3d11_create_device_ptr = GetProcAddress(dx11_dll_handle, "D3D11CreateDevice");
     d3d11_create_device_and_swap_chain_ptr =
         GetProcAddress(dx11_dll_handle, "D3D11CreateDeviceAndSwapChain");
+    d3d11_on_12_create_device_ptr = GetProcAddress(dx11_dll_handle, "D3D11On12CreateDevice");
 }
 
 void free(void) {
