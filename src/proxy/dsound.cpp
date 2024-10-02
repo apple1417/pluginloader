@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "proxy.h"
 #include "util.h"
 
 namespace pluginloader::proxy {

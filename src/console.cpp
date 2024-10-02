@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "console.h"
 #include "version.inl"
 
 namespace pluginloader::console {

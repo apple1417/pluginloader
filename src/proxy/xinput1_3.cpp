@@ -1,6 +1,6 @@
 #include "pch.h"
-#include <libloaderapi.h>
 
+#include "proxy.h"
 #include "util.h"
 
 namespace pluginloader::proxy {

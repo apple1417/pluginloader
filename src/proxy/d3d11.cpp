@@ -1,5 +1,6 @@
 #include "pch.h"
 
+#include "proxy.h"
 #include "util.h"
 
 // Based on https://github.com/FromDarkHell/BL3DX11Injection/

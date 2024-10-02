@@ -1,5 +1,7 @@
 #include "pch.h"
 
+#include "proxy.h"
+
 // Empty proxy for dlls where we don't need to forward anything.
 
 namespace pluginloader::proxy {

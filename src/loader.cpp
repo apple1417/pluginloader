@@ -4,9 +4,13 @@
 
 namespace pluginloader::loader {
 
+namespace {
+
 const constexpr auto PLUGINS_DIR_NAME = "Plugins";
 
 std::vector<HMODULE> loaded_modules{};
+
+}  // namespace
 
 void load(HMODULE this_dll) {
     wchar_t buf[MAX_PATH];
