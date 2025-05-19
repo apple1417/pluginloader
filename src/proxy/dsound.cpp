@@ -30,6 +30,10 @@ FARPROC direct_sound_capture_create_8_ptr = nullptr;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
 #endif
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type-mismatch"
+#endif
 
 // #include "dsound.h"
 
@@ -106,6 +110,9 @@ DLL_EXPORT HRESULT WINAPI DirectSoundCaptureCreate8(LPCGUID pcGuidDevice,
         direct_sound_capture_create_8_ptr)(pcGuidDevice, ppDSC8, pUnkOuter);
 }
 
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 #if defined(__MINGW32__)
 #pragma GCC diagnostic pop
 #endif
