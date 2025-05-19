@@ -24,6 +24,10 @@ FARPROC d3d11_on_12_create_device_ptr = nullptr;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
 #endif
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type-mismatch"
+#endif
 
 DLL_EXPORT HRESULT D3D11CoreCreateDevice(void* fact,
                                          void* adapt,
@@ -81,6 +85,9 @@ DLL_EXPORT HRESULT D3D11On12CreateDevice(void* pDevice,
         ppDevice, ppImmediateContext, pChosenFeatureLevel);
 }
 
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 #if defined(__MINGW32__)
 #pragma GCC diagnostic pop
 #endif

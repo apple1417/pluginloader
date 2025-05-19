@@ -34,6 +34,10 @@ FARPROC xinput_power_off_controller_ptr = nullptr;
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wcast-function-type"
 #endif
+#if defined(__clang__)
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wcast-function-type-mismatch"
+#endif
 
 DLL_EXPORT void XInputEnable(BOOL enable) {
     reinterpret_cast<decltype(&XInputEnable)>(xinput_enable_ptr)(enable);
@@ -93,6 +97,9 @@ DLL_EXPORT DWORD XInputPowerOffController(DWORD dwUserIndex) {
         dwUserIndex);
 }
 
+#if defined(__clang__)
+#pragma clang diagnostic pop
+#endif
 #if defined(__MINGW32__)
 #pragma GCC diagnostic pop
 #endif
